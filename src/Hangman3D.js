@@ -1,93 +1,162 @@
-// src/Hangman3D.js
+
 import * as THREE from "three";
 import React, { useEffect, useRef } from "react";
 
 const Hangman3D = ({ mistakes }) => {
   const hangmanDiv = useRef(null);
-  
+
   useEffect(() => {
-    // hangmanDiv.current가 존재하는지 검사
     if (hangmanDiv.current) {
-      console.log("Initializing Three.js objects");  // 로그 추가  
       const scene = new THREE.Scene();
-      console.log("Scene:", scene);  // 로그 추가
-      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-      const renderer = new THREE.WebGLRenderer();
-      renderer.setSize(hangmanDiv.current.clientWidth, hangmanDiv.current.clientHeight);
+      const camera = new THREE.PerspectiveCamera(75, hangmanDiv.current.clientWidth / 400, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(hangmanDiv.current.clientWidth, 400);
+      renderer.shadowMap.enabled = true;
+      hangmanDiv.current.innerHTML = '';  // Clear the div
       hangmanDiv.current.appendChild(renderer.domElement);
 
-      const objects = [];
+      // Add lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      // Add lighting with shadow
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+      directionalLight.position.set(0, 10, 10);
+      directionalLight.castShadow = true;
+      directionalLight.shadow.mapSize.width = 512;  // default is 512
+      directionalLight.shadow.mapSize.height = 512; // default is 512
+      scene.add(directionalLight);      
+      scene.add(ambientLight);
+      
 
-      const addObject = (geometry, material, position, visible) => {
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.copy(position);
-        mesh.visible = visible;
-        scene.add(mesh);
-        objects.push(mesh);
-      };
+      // 1. Adjusted the Gallows' Position
+      const gallowsGeometry = new THREE.BoxGeometry(1, 5, 1);
+      const gallowsMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
+      const gallows = new THREE.Mesh(gallowsGeometry, gallowsMaterial);
+      gallows.position.set(-2, 2.5, 0);
 
-      const parts = [
-        { geometry: new THREE.BoxGeometry(5, 0.5, 5), material: new THREE.MeshBasicMaterial({ color: 0x8B4513 }), position: new THREE.Vector3(0, 0, 0), visible: false }, // Base
-        { geometry: new THREE.CylinderGeometry(0.1, 0.1, 4, 32), material: new THREE.MeshBasicMaterial({ color: 0x8B4513 }), position: new THREE.Vector3(0, 2, 0), visible: false }, // Rope
-        { geometry: new THREE.SphereGeometry(0.5, 32, 32), material: new THREE.MeshBasicMaterial({ color: 0xFFFFFF }), position: new THREE.Vector3(0, 1.5, 0), visible: false }, // Head
-        { geometry: new THREE.BoxGeometry(1, 3, 1), material: new THREE.MeshBasicMaterial({ color: 0xFF0000 }), position: new THREE.Vector3(0, 0.5, 0), visible: false }, // Body
-        { geometry: new THREE.BoxGeometry(1, 0.2, 1), material: new THREE.MeshBasicMaterial({ color: 0x000000 }), position: new THREE.Vector3(0, -1, 0), visible: false }, // Left Leg
-        { geometry: new THREE.BoxGeometry(1, 0.2, 1), material: new THREE.MeshBasicMaterial({ color: 0x000000 }), position: new THREE.Vector3(0, -1, 0), visible: false }, // Right Leg
-        { geometry: new THREE.BoxGeometry(0.5, 1, 0.2), material: new THREE.MeshBasicMaterial({ color: 0xFF0000 }), position: new THREE.Vector3(-0.75, 0.5, 0), visible: false }, // Left Arm
-        { geometry: new THREE.BoxGeometry(0.5, 1, 0.2), material: new THREE.MeshBasicMaterial({ color: 0xFF0000 }), position: new THREE.Vector3(0.75, 0.5, 0), visible: false },  // Right Arm
-        { geometry: new THREE.BoxGeometry(0.5, 1, 0.2), material: new THREE.MeshBasicMaterial({ color: 0x000000 }), position: new THREE.Vector3(0, -1, 0), visible: false }, // Left Hand
-        { geometry: new THREE.BoxGeometry(0.5, 1, 0.2), material: new THREE.MeshBasicMaterial({ color: 0x000000 }), position: new THREE.Vector3(0, -1, 0), visible: false }, // Right Hand
-        { geometry: new THREE.BoxGeometry(0.5, 1, 0.2), material: new THREE.MeshBasicMaterial({ color: 0x000000 }), position: new THREE.Vector3(0, -1, 0), visible: false }, // Left Foot
-        { geometry: new THREE.BoxGeometry(0.5, 1, 0.2), material: new THREE.MeshBasicMaterial({ color: 0x000000 }), position: new THREE.Vector3(0, -1, 0), visible: false }, // Right Foot
-        // Add more parts here...
-      ];
-      parts[0].visible = true;
+      const plankGeometry = new THREE.BoxGeometry(4, 0.2, 1);
+      const plankMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
+      const plank = new THREE.Mesh(plankGeometry, plankMaterial);
+      plank.position.set(0, 4.9, 0);
+
+      const gallowsGroup = new THREE.Object3D();
+      gallowsGroup.add(gallows, plank);
+
+      scene.add(gallowsGroup);
+
+      // 2. Creating and Positioning Hangman's Parts
+      const hangmanFigure = new THREE.Object3D();
+
+      const ropeGeometry = new THREE.CylinderGeometry(0.1, 0.1, 2, 32);
+      const ropeMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
+      const rope = new THREE.Mesh(ropeGeometry, ropeMaterial);
+      rope.position.set(0, 3.5, 0); // Adjusted position
+
+      const headGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+      const headMaterial = new THREE.MeshPhongMaterial({ color: 0xFFFFFF });
+      const head = new THREE.Mesh(headGeometry, headMaterial);
+      head.position.set(0, 3, 0);  // Adjusted position
+
+      // The body
+      const bodyGeometry = new THREE.BoxGeometry(1, 3, 1);
+      const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0xFF0000 });
+      const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+      body.position.set(0, 0.5, 0);
+
+      // The limbs (arms and legs together)
+      const limbsGeometry = new THREE.BoxGeometry(1, 0.2, 1);
+      const limbsMaterial = new THREE.MeshPhongMaterial({ color: 0x8A2BE2 });
+
+      const leftArm = new THREE.Mesh(limbsGeometry, limbsMaterial);
+      leftArm.position.set(-1, 1.2, 0); 
+
+      const rightArm = new THREE.Mesh(limbsGeometry, limbsMaterial);
+      rightArm.position.set(1, 1.2, 0); 
+      
+      // Group Arms together
+      const arms = new THREE.Object3D();
+      arms.add(leftArm, rightArm);
+
+      const leftHand = new THREE.Mesh(limbsGeometry, limbsMaterial);
+      leftHand.position.set(-1.3, 1.2, 0);
+
+      const rightHand = new THREE.Mesh(limbsGeometry, limbsMaterial);
+      rightHand.position.set(1.3, 1.2, 0);
+      
+      // Group Hands together
+      const hands = new THREE.Object3D();
+      hands.add(leftHand,rightHand );
+
+      const leftLeg = new THREE.Mesh(limbsGeometry, limbsMaterial);
+      leftLeg.position.set(-0.6, -1.5, 0);
+
+      const rightLeg = new THREE.Mesh(limbsGeometry, limbsMaterial);
+      rightLeg.position.set(0.6, -1.5, 0);
+
+      // Group Leg together
+      const legs = new THREE.Object3D();
+      legs.add(leftLeg, rightLeg);
+      
+      const leftFoot = new THREE.Mesh(limbsGeometry, limbsMaterial);
+      leftFoot.position.set(-0.6, -1.8, 0);
+
+      const rightFoot = new THREE.Mesh(limbsGeometry, limbsMaterial);
+      rightFoot.position.set(0.6, -1.8, 0);
+
+      // Group Feet together
+      const feet = new THREE.Object3D();
+      feet.add(leftFoot, rightFoot);
+      
+      // Enable shadow for objects
+      gallows.castShadow = true;
+      gallows.receiveShadow = true;
+      plank.receiveShadow = true;
+      rope.castShadow = true;
+      head.castShadow = true;
+      body.castShadow = true;
+      arms.castShadow = true;
+      hands.castShadow = true;
+      legs.castShadow = true;
+      feet.castShadow = true;
+
+      // Add all parts to the hangman figure
+      hangmanFigure.add(rope, head, body, arms, hands, legs, feet);
+
+      hangmanFigure.children.forEach(child => {
+        child.visible = false;
+      });
+
+      scene.add(hangmanFigure);
+
+      // 3. Camera Position Adjusted
+      // camera.position.set(0, 2, 10);  // Adjusted position
+      camera.position.set(0, 2, 8);
+
+      const parts = [rope, head, body, arms, hands, legs, feet];
+
       const addParts = (numParts) => {
-        for (let i = 0; i < numParts; i++) {
-          const part = parts[i];
-          addObject(part.geometry, part.material, part.position, part.visible);
+        for (let i = 0; i < Math.min(numParts, parts.length); i++) {
+          if (parts[i]) {
+            parts[i].visible = true;
+          }
         }
       };
+      
 
-      camera.position.z = 20;
+      // camera.position.z = 10;
 
+      addParts(mistakes);
 
       const animate = () => {
-        const numPartsToShow = Math.min(mistakes, parts.length);
-        for (let i = 0; i < numPartsToShow; i++) {
-          objects[i].visible = true;
-        }
-
-        renderer.render(scene, camera);
         requestAnimationFrame(animate);
+        hangmanFigure.rotation.y += 0.03;
+        renderer.render(scene, camera);
       };
 
-      addParts(parts.length);
       animate();
-
-      return () => {
-        // Clean-up
-        for (const object of objects) {
-          scene.remove(object);
-          object.geometry.dispose();
-          object.material.dispose();
-        }
-        renderer.dispose();
-      };
     }
-  }, [mistakes]);  // 의존성 배열에서 hangmanDiv.current를 제거
+  }, [mistakes]);
 
   return <div ref={hangmanDiv}></div>;
 };
 
 export default Hangman3D;
-// 주요 변경 사항:
-
-// useEffect에서 hangmanDiv.current가 존재하는지 검사합니다. 존재하지 않으면 그 이후의 코드는 실행되지 않습니다.
-// useEffect의 의존성 배열에서 hangmanDiv.current를 제거했습니다. 이제 mistakes 값에만 의존하게 됩니다.
-// 이렇게 수정하면 이전에 발생했던 Cannot read properties of null (reading 'appendChild') 오류는 해결될 가능성이 높습니다.
-
-
-
-
-

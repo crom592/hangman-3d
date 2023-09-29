@@ -1,6 +1,7 @@
 import React from "react";
 import GameUI from "./GameUI";
 import { Helmet } from 'react-helmet';  // 추가
+import './App.css'
 
 const App = () => {
   return (

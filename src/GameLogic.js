@@ -1,41 +1,27 @@
-// src/GameLogic.js
+export default class GameLogic {
+  static words = [
+    "apple", "banana", "cherry", "date", "elephant", "flamingo", "grape",
+    "honey", "iguana", "jaguar", "kangaroo", "lemon", "mongoose", "nectarine",
+    "ostrich", "peach", "quokka", "raspberry", "strawberry", "tiger", 
+    "umbrella", "vulture", "walrus", "xylophone", "yak", "zebra", 
+    "octopus", "narwhal", "lemur", "koala", "jellyfish"
+  ];
+  static logSelectedWord(word) {
+    console.log(`Selected Word: ${word}`);
+  }
+  static getRandomWord() {
+    return this.words[Math.floor(Math.random() * this.words.length)].toUpperCase();
+  }
 
-import { useState } from "react";
-import { words } from "./words";
+  static isWordComplete(word, guessedLetters) {
+    return word.split('').every((letter) => guessedLetters.includes(letter));
+  }
 
-export const useGameLogic = () => {
-  const [word, setWord] = useState("");
-  const [guessedLetters, setGuessedLetters] = useState([]);
-  const [mistakes, setMistakes] = useState(0);
+  static getHiddenWord(word, guessedLetters) {
+    return word.split('')
+               .map((letter) => guessedLetters.includes(letter) ? letter : '_')
+               .join(' ');
+  }
+}
 
-  const chooseRandomWords = () => {
-    const shuffledWords = [...words].sort(() => 0.5 - Math.random());
-    return shuffledWords.slice(0, 3);
-  };
-  
-
-  const startGame = (chosenWord) => {
-    setWord(chosenWord);
-    setGuessedLetters([]);
-    setMistakes(0);
-  };
-
-  const guessLetter = (letter) => {
-    if (word.includes(letter)) {
-      setGuessedLetters([...guessedLetters, letter]);
-    } else {
-      setMistakes(mistakes + 1);
-    }
-  };
-  
-
-  return {
-    word,
-    guessedLetters,
-    mistakes,
-    chooseRandomWords,
-    startGame,
-    guessLetter,
-  };
-};
-
+// export default GameLogic;
