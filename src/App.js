@@ -1,25 +1,16 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import GameUI from "./GameUI";
+import { Helmet } from 'react-helmet';  // 추가
 
-function App() {
+const App = () => {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Helmet>  {/* 추가 */}
+        <title>Hangman Game by Crom</title>  {/* 추가 */}
+      </Helmet>  {/* 추가 */}
+      <GameUI />
     </div>
   );
-}
+};
 
 export default App;
