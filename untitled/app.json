@@ -1,0 +1,98 @@
+{
+	"metadata": {
+		"type": "App"
+	},
+	"project": {
+		"shadows": true,
+		"shadowType": 1,
+		"vr": false,
+		"toneMapping": 0,
+		"toneMappingExposure": 1
+	},
+	"camera": {
+		"metadata": {
+			"version": 4.6,
+			"type": "Object",
+			"generator": "Object3D.toJSON"
+		},
+		"object": {
+			"uuid": "6106133d-a978-4f09-828a-b235db642552",
+			"type": "PerspectiveCamera",
+			"name": "Camera",
+			"layers": 1,
+			"matrix": [0.9656783387424851,0,0.25974092108012986,0,0.03840762939554341,0.9890069564074596,-0.1427938870605735,0,-0.2568855778119294,0.14786899667493936,0.955062594668317,0,-6.053218830819421,3.4843660854422276,22.504972571445936,1],
+			"up": [0,1,0],
+			"fov": 50,
+			"zoom": 1,
+			"near": 0.01,
+			"far": 1000,
+			"focus": 10,
+			"aspect": 1.159406858202039,
+			"filmGauge": 35,
+			"filmOffset": 0
+		}
+	},
+	"scene": {
+		"metadata": {
+			"version": 4.6,
+			"type": "Object",
+			"generator": "Object3D.toJSON"
+		},
+		"geometries": [
+			{
+				"uuid": "b86b3a91-ef87-4ea4-820b-0806eb300173",
+				"type": "SphereGeometry",
+				"radius": 1,
+				"widthSegments": 32,
+				"heightSegments": 16,
+				"phiStart": 0,
+				"phiLength": 6.283185307179586,
+				"thetaStart": 0,
+				"thetaLength": 3.141592653589793
+			}],
+		"materials": [
+			{
+				"uuid": "332512ef-d88e-4ff0-8865-34db798e6a17",
+				"type": "MeshStandardMaterial",
+				"color": 16777215,
+				"roughness": 1,
+				"metalness": 0,
+				"emissive": 0,
+				"envMapIntensity": 1,
+				"depthFunc": 3,
+				"depthTest": true,
+				"depthWrite": true,
+				"colorWrite": true,
+				"stencilWrite": false,
+				"stencilWriteMask": 255,
+				"stencilFunc": 519,
+				"stencilRef": 0,
+				"stencilFuncMask": 255,
+				"stencilFail": 7680,
+				"stencilZFail": 7680,
+				"stencilZPass": 7680
+			}],
+		"object": {
+			"uuid": "399784fa-2955-4f3c-8f63-604141524c5c",
+			"type": "Scene",
+			"name": "Scene",
+			"layers": 1,
+			"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+			"up": [0,1,0],
+			"background": 13348783,
+			"children": [
+				{
+					"uuid": "da1b4c21-2485-46a4-8611-c5664eeb6c65",
+					"type": "Mesh",
+					"name": "Sphere",
+					"layers": 1,
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-0.13836527293182943,2.3331325322556773,-0.8967170578918426,1],
+					"up": [0,1,0],
+					"geometry": "b86b3a91-ef87-4ea4-820b-0806eb300173",
+					"material": "332512ef-d88e-4ff0-8865-34db798e6a17"
+				}]
+		}
+	},
+	"scripts": {},
+	"environment": null
+}

@@ -5,31 +5,68 @@
   justify-content: space-between;
   align-items: flex-start;  /* Change to flex-start to prevent stretching */
   height: 100vh;
+   /* background-color: rgb(204, 24, 96); */
 }
 
 .hangman-container {
   flex: 1;
   max-width: 50%;
   height: 100%; /* 높이를 100%로 설정 */
-  display: flex;
   justify-content: center; /* 가운데 정렬 */
   align-items: center; /* 가운데 정렬 */
   overflow: visible;
+  /* background-color: rgb(204, 24, 96); */
 }
 
 .info-container {
   flex: 1;
   max-width: 50%;
+  height: 100%; /* 높이를 100%로 설정 */
   display: flex;
   flex-direction: column;
-  justify-content: center; /* 가운데 정렬 */
-  align-items: center; /* 가운데 정렬 */
+  justify-content: center; /* 수직 중앙 정렬 */
+  align-items: center; /* 수평 중앙 정렬 */
+  /* background-color: lightblue; */
+}
+/* General button styling */
+.game-button {
+  background: linear-gradient(90deg, rgba(255,0,150,1) 0%, rgba(0,204,255,1) 100%);
+  border: none;
+  border-radius: 25px;
+  color: white;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 10px 20px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
-.alphabet-buttons button.incorrect {
-  color: red;
+.game-button:hover {
+  background: linear-gradient(90deg, rgba(0,204,255,1) 0%, rgba(255,0,150,1) 100%);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
 }
-/* App.css */
+
+.game-button:active {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(1px);
+}
+.alphabet-buttons button.incorrect {
+  background-color: red;
+  
+}
+.game-button-container {
+  display: flex;
+  justify-content: flex-end;
+  height: auto;
+}
+.bgm-button {
+  display: inline;
+  align-items: right;
+  font-size: 10px;
+}
 
 .keyboard-button {
   width: 40px;  /* 버튼 너비 설정 */
@@ -38,16 +75,23 @@
   padding: 10px 20px;  /* 패딩 설정 */
   font-size: 24px;  /* 글씨 크기 설정 */
   border-radius: 5px;  /* 버튼 모서리 둥글게 */
+  display: flex;
+  justify-content: center; /* 가운데 정렬 */
+  align-items: center; /* 가운데 정렬 */
+  background: linear-gradient(90deg, rgb(119, 179, 164) 0%, rgba(0,255,128,1) 100%);
+  transition: all 0.3s ease;
 }
 
 .keyboard-button.correct {
   background-color: green;
   color: white;
+  background: linear-gradient(90deg, rgb(23, 5, 183) 0%, rgb(10, 111, 226) 100%);
 }
 
 .keyboard-button.incorrect {
   background-color: red;
   color: white;
+  background: linear-gradient(90deg, rgba(255,0,0,1) 0%, rgba(255,128,0,1) 100%);
 }
 
 .keyboard-row {
@@ -61,7 +105,7 @@
   text-align: center;  /* 가운데 정렬 */
 }
 
-.error-count, .problem-number, .correct-count {
+.error-count, .quiz-number, .correct-count {
   font-size: 36px;  /* 글씨 크기 증가 */
   margin-bottom: 20px;
   text-align: center;  /* 가운데 정렬 */
@@ -83,37 +127,151 @@
   margin-left: auto;  /* 가운데 정렬 */
   margin-right: auto;  /* 가운데 정렬 */
 }
+/* Additional styling for Next and Restart Buttons */
+.next-button, .restart-button {
+  font-size: 24px;  /* Bigger font size */
+  padding: 15px 30px;
+}
 
 .alphabet-buttons {
   margin-top: 30px;  /* 알파벳 배열과의 거리 증가 */
 }
+/* ... (기존 코드 생략) ... */
+
 /* 반응형 설정 */
-@media screen and (max-width: 768px) {  /* 768px 이하의 화면 크기에 적용 */
+@media screen and (max-width: 800px) {
   .game-container {
-    flex-direction: column;  /* 가로 정렬을 세로 정렬로 변경 */
-    align-items: center;  /* 가운데 정렬 */
-    text-align: center;  /* 가운데 정렬 */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   .hangman-container, .info-container {
-    max-width: 100%;  /* 컨테이너 최대 너비를 100%로 설정 */
-    text-align: center;  /* 가운데 정렬 */
+    max-width: 100%;
+    margin: 10px 0; /* 상하 여백 추가 */
   }
 
+
   .keyboard-button {
-    width: 30px;  /* 버튼 너비 줄이기 */
-    height: 30px;  /* 버튼 높이 줄이기 */
-    font-size: 18px;  /* 폰트 크기 줄이기 */
-    text-align: center;  /* 가운데 정렬 */
+    width: 36px;  /* 버튼 너비 조정 */
+    height: 36px;  /* 버튼 높이 조정 */
+    font-size: 18px;  /* 글씨 크기 조정 */
+    margin: 0 0px;  /* 양쪽 마진 조정 */
+    padding: 5px 10px;  /* 패딩 조정 */
+  }
+
+  .keyboard-row {
+    margin-bottom: 0.5rem;  /* 아래쪽 마진 조정 */
+    /* justify-content: space-evenly; 알파벳 버튼 간격을 동일하게 설정 */
   }
 
   .hidden-word {
-    font-size: 24px;  /* 폰트 크기 줄이기 */
-    text-align: center;  /* 가운데 정렬 */
+    font-size: 36px; /* 폰트 크기를 줄임 */
   }
 
-  .error-count {
-    font-size: 18px;  /* 폰트 크기 줄이기 */
-    text-align: center;  /* 가운데 정렬 */
+  .error-count, .quiz-number, .correct-count {
+    font-size: 24px; /* 폰트 크기를 줄임 */
+  }
+
+  .restart-button, .next-button {
+    padding: 10px 20px; /* 패딩을 줄임 */
+  }
+
+  .alphabet-buttons {
+    margin-top: 20px; /* 여백을 줄임 */
   }
 }
+
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* Add a transition for smoothness */
+.modal-content h1,
+.modal-content button {
+  margin-bottom: 20px;
+}
+
+.start-button {
+  background: linear-gradient(90deg, rgba(255,0,150,1) 0%, rgba(0,204,255,1) 100%);
+  border: none;
+  border-radius: 30px;
+  color: white;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+  padding: 15px 30px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.start-button:hover {
+  background: linear-gradient(90deg, rgba(0,204,255,1) 0%, rgba(255,0,150,1) 100%);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.start-button:active {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(2px);
+}
+
+
+
+/* 
+.celebration {
+  position: relative;
+  overflow: hidden;
+}
+
+.celebration::before,
+.celebration::after,
+.balloon {
+  content: "";
+  position: absolute;
+  bottom: -100px;
+  width: 20px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: red;
+  animation: floatBalloon 5s infinite ease-in-out;
+}
+
+.celebration::after {
+  left: 50px;
+  background-color: blue;
+  animation-delay: 1s;
+}
+
+.balloon {
+  left: 100px;
+  background-color: green;
+  animation-delay: 2s;
+}
+
+@keyframes floatBalloon {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100vh);
+  }
+} */

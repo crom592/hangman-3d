@@ -1,106 +1,145 @@
 
 import * as THREE from "three";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef ,useState} from "react";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 const Hangman3D = ({ mistakes }) => {
   const hangmanDiv = useRef(null);
+  const [swayAngle, setSwayAngle] = useState(0);
 
   useEffect(() => {
     if (hangmanDiv.current) {
+
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, hangmanDiv.current.clientWidth / 400, 0.1, 1000);
+      
       const renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(hangmanDiv.current.clientWidth, 400);
+      renderer.setSize((window.innerWidth/2) , window.innerHeight);
       renderer.shadowMap.enabled = true;
+      
+      const camera = new THREE.PerspectiveCamera(75, (window.innerWidth/2)  / window.innerHeight, 0.1, 1000);
+      camera.aspect = (window.innerWidth/2) / window.innerHeight;
+      camera.updateProjectionMatrix();
+
       hangmanDiv.current.innerHTML = '';  // Clear the div
       hangmanDiv.current.appendChild(renderer.domElement);
 
+      // Optionally, configure the controls
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true; // Smooth camera movement
+      controls.dampingFactor = 0.05; // Adjust the damping factor as needed
+      controls.rotateSpeed = 0.5;   // Adjust the rotation speed as needed
+
       // Add lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
       // Add lighting with shadow
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
       directionalLight.position.set(0, 10, 10);
       directionalLight.castShadow = true;
       directionalLight.shadow.mapSize.width = 512;  // default is 512
-      directionalLight.shadow.mapSize.height = 512; // default is 512
+      directionalLight.shadow.mapSize.height = 256; // default is 512
       scene.add(directionalLight);      
       scene.add(ambientLight);
       
 
       // 1. Adjusted the Gallows' Position
-      const gallowsGeometry = new THREE.BoxGeometry(1, 5, 1);
+      const gallowsGeometry = new THREE.CylinderGeometry(0.5, 0.5, 5, 32);  // Changed to Cylinder
+      const normalTexture = new THREE.TextureLoader().load(
+        process.env.PUBLIC_URL + '/34503018.jpeg'
+      )
       const gallowsMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
+      gallowsMaterial.normalMap = normalTexture
+      gallowsMaterial.normalScale.set(1, 4)
       const gallows = new THREE.Mesh(gallowsGeometry, gallowsMaterial);
       gallows.position.set(-2, 2.5, 0);
 
-      const plankGeometry = new THREE.BoxGeometry(4, 0.2, 1);
-      const plankMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
-      const plank = new THREE.Mesh(plankGeometry, plankMaterial);
+      const plankGeometry = new THREE.BoxGeometry(4, 0.2, 0.5);  // Reduced depth
+      const plank = new THREE.Mesh(plankGeometry, gallowsMaterial);
       plank.position.set(0, 4.9, 0);
 
+      const boxGeometry = new THREE.BoxGeometry(5, 0.5, 2);  // Reduced depth
+      const box = new THREE.Mesh(boxGeometry, gallowsMaterial);
+      box.position.set(-0.5, 0, 0);
+
       const gallowsGroup = new THREE.Object3D();
-      gallowsGroup.add(gallows, plank);
+      gallowsGroup.add(gallows, plank,box);
 
       scene.add(gallowsGroup);
 
       // 2. Creating and Positioning Hangman's Parts
       const hangmanFigure = new THREE.Object3D();
 
-      const ropeGeometry = new THREE.CylinderGeometry(0.1, 0.1, 2, 32);
-      const ropeMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
-      const rope = new THREE.Mesh(ropeGeometry, ropeMaterial);
-      rope.position.set(0, 3.5, 0); // Adjusted position
-
-      const headGeometry = new THREE.SphereGeometry(0.5, 32, 32);
-      const headMaterial = new THREE.MeshPhongMaterial({ color: 0xFFFFFF });
+      const ropeGeometry = new THREE.CylinderGeometry(0.05, 0.05, 1, 32);  // Reduced radius
+      const rope = new THREE.Mesh(ropeGeometry, gallowsMaterial);
+      rope.position.set(0, 4.5, 0);
+      
+      const headNormalTexture = new THREE.TextureLoader().load(
+        process.env.PUBLIC_URL + '/smile.png'
+      )
+      const headGeometry = new THREE.SphereGeometry(0.4, 32, 32,199.5);  // Reduced radius
+      const headMaterial = new THREE.MeshPhongMaterial({ color: 0xFFFF00 });
+      headMaterial.normalMap = headNormalTexture
+      headMaterial.normalScale.set(10, 10)
       const head = new THREE.Mesh(headGeometry, headMaterial);
-      head.position.set(0, 3, 0);  // Adjusted position
+      head.position.set(0, 3.7, 0);
 
       // The body
-      const bodyGeometry = new THREE.BoxGeometry(1, 3, 1);
-      const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0xFF0000 });
+      const bodyGeometry = new THREE.CapsuleGeometry(0.5, 0.8, 3, 32);  
+      const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0xA08265 });
       const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-      body.position.set(0, 0.5, 0);
+      body.position.set(0, 2.6, 0);
 
-      // The limbs (arms and legs together)
-      const limbsGeometry = new THREE.BoxGeometry(1, 0.2, 1);
-      const limbsMaterial = new THREE.MeshPhongMaterial({ color: 0x8A2BE2 });
+      // arms
+      const armsGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1.2);
+      const armsMaterial = new THREE.MeshPhongMaterial({ color: 0xA08265 });
 
-      const leftArm = new THREE.Mesh(limbsGeometry, limbsMaterial);
-      leftArm.position.set(-1, 1.2, 0); 
-
-      const rightArm = new THREE.Mesh(limbsGeometry, limbsMaterial);
-      rightArm.position.set(1, 1.2, 0); 
+      const leftArm = new THREE.Mesh(armsGeometry, armsMaterial);
+      leftArm.position.set(-0.65,2.8, 0); 
+      leftArm.rotation.z = 12
+      const rightArm = new THREE.Mesh(armsGeometry, armsMaterial);
+      rightArm.position.set(0.65, 2.8, 0); 
+      rightArm.rotation.z = -12
       
       // Group Arms together
       const arms = new THREE.Object3D();
       arms.add(leftArm, rightArm);
 
-      const leftHand = new THREE.Mesh(limbsGeometry, limbsMaterial);
-      leftHand.position.set(-1.3, 1.2, 0);
-
-      const rightHand = new THREE.Mesh(limbsGeometry, limbsMaterial);
-      rightHand.position.set(1.3, 1.2, 0);
+      //hands
+      const handGeometry = new THREE.CapsuleGeometry(0.2, 0.1 , 0.5);
+      const handMaterial = new THREE.MeshPhongMaterial({ color: 0xA08265 });
       
+      const leftHand = new THREE.Mesh(handGeometry, handMaterial);
+      leftHand.position.set(-1, 2.3, 0);
+
+      const rightHand = new THREE.Mesh(handGeometry, handMaterial);
+      rightHand.position.set(1, 2.3, 0);
+    
       // Group Hands together
       const hands = new THREE.Object3D();
       hands.add(leftHand,rightHand );
 
-      const leftLeg = new THREE.Mesh(limbsGeometry, limbsMaterial);
-      leftLeg.position.set(-0.6, -1.5, 0);
+      //legs
+      const legGeometry = new THREE.CylinderGeometry(0.2, 0.2, 1);
+      const legMaterial = new THREE.MeshPhongMaterial({ color: 0xA08265 });
 
-      const rightLeg = new THREE.Mesh(limbsGeometry, limbsMaterial);
-      rightLeg.position.set(0.6, -1.5, 0);
+      const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
+      leftLeg.position.set(-0.3, 1.5, 0);
+
+      const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
+      rightLeg.position.set(0.3, 1.5, 0);
 
       // Group Leg together
       const legs = new THREE.Object3D();
       legs.add(leftLeg, rightLeg);
       
-      const leftFoot = new THREE.Mesh(limbsGeometry, limbsMaterial);
-      leftFoot.position.set(-0.6, -1.8, 0);
+      // feet
+      const feetGeometry = new THREE.BoxGeometry(0.3, 0.2, 0.8);
+      const feetMaterial = new THREE.MeshPhongMaterial({ color: 0xA08265 });
 
-      const rightFoot = new THREE.Mesh(limbsGeometry, limbsMaterial);
-      rightFoot.position.set(0.6, -1.8, 0);
+      const leftFoot = new THREE.Mesh(feetGeometry, feetMaterial);
+      leftFoot.position.set(-0.3, 0.9, 0);
+
+      const rightFoot = new THREE.Mesh(feetGeometry, feetMaterial);
+      rightFoot.position.set(0.3, 0.9, 0);
 
       // Group Feet together
       const feet = new THREE.Object3D();
@@ -129,7 +168,7 @@ const Hangman3D = ({ mistakes }) => {
 
       // 3. Camera Position Adjusted
       // camera.position.set(0, 2, 10);  // Adjusted position
-      camera.position.set(0, 2, 8);
+      camera.position.set(6, 3, 8);
 
       const parts = [rope, head, body, arms, hands, legs, feet];
 
@@ -142,16 +181,20 @@ const Hangman3D = ({ mistakes }) => {
       };
       
 
-      // camera.position.z = 10;
+      camera.position.z = 8;
 
       addParts(mistakes);
 
       const animate = () => {
-        requestAnimationFrame(animate);
-        hangmanFigure.rotation.y += 0.03;
+        requestAnimationFrame(animate);                
+        // Update the camera controls
+        controls.update();
+        setSwayAngle(Math.sin(Date.now() * 0.0015) * 0.015); // Adjust the amplitude and speed as needed        
+        // hangmanFigure.rotation.x += swayAngle
         renderer.render(scene, camera);
+        // hangmanFigure.rotation.y += swayAngle;
       };
-
+      
       animate();
     }
   }, [mistakes]);

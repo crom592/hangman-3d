@@ -1,27 +1,23 @@
-export default class GameLogic {
-  static words = [
-    "apple", "banana", "cherry", "date", "elephant", "flamingo", "grape",
-    "honey", "iguana", "jaguar", "kangaroo", "lemon", "mongoose", "nectarine",
-    "ostrich", "peach", "quokka", "raspberry", "strawberry", "tiger", 
-    "umbrella", "vulture", "walrus", "xylophone", "yak", "zebra", 
-    "octopus", "narwhal", "lemur", "koala", "jellyfish"
-  ];
-  static logSelectedWord(word) {
-    console.log(`Selected Word: ${word}`);
-  }
-  static getRandomWord() {
-    return this.words[Math.floor(Math.random() * this.words.length)].toUpperCase();
-  }
+const words = [
+  'APPLE', 'BANANA', 'ORANGE', 'MANGO', 'GRAPE', 'PEACH', 'MELON',
+  'CHERRY', 'FIG', 'LEMON', 'LIME', 'OLIVE', 'PLUM', 'PEAR',
+  'PINEAPPLE', 'PAPAYA', 'BERRY', 'COCONUT', 'DATE', 'KIWI',
+  'WALNUT', 'ALMOND', 'PECAN', 'CASHEW', 'HAZELNUT',
+  'PISTACHIO', 'CHESTNUT', 'MACADAMIA', 'PEANUT', 'BRAZIL'
+];
 
-  static isWordComplete(word, guessedLetters) {
-    return word.split('').every((letter) => guessedLetters.includes(letter));
+export default {
+  getRandomWord() {
+    const randomIndex = Math.floor(Math.random() * words.length);
+    return words[randomIndex];
+  },
+  isWordComplete(word, guessedLetters) {
+    return [...word].every(letter => guessedLetters.includes(letter));
+  },
+  getHiddenWord(word, guessedLetters) {
+    return [...word].map(letter => (guessedLetters.includes(letter) ? letter : '_')).join(' ');
+  },
+  logSelectedWord(word) {
+    console.log(`Selected word is: ${word}`);
   }
-
-  static getHiddenWord(word, guessedLetters) {
-    return word.split('')
-               .map((letter) => guessedLetters.includes(letter) ? letter : '_')
-               .join(' ');
-  }
-}
-
-// export default GameLogic;
+};
