@@ -69,64 +69,31 @@ const GameUI = () => {
     setIsBgmPlaying(!isBgmPlaying);
   };
 
-  // const nextQuiz = () => {
-  //   if (quizNumber < 3) {
-  //     setWord(GameLogic.getRandomWord());
-  //     setGuessedLetters([]);
-  //     setMistakes(0);
-  //     setQuizNumber(quizNumber + 1);
-  //     setShowNextButton(false);
-  //     setShowGameOverModal(false); // 추가: Next Quiz 버튼을 눌렀을 때 모달을 닫습니다.
-  //     setHasGuessedCorrectly(false); // Added to fix the correctCount issue
-  //   } else {
-  //     setGameOver(true);
-  //     setShowNextButton(false);
-  //   }
-  // };
-
-  // const restartGame = () => {
-  //   setWord(GameLogic.getRandomWord());
-  //   setGuessedLetters([]);
-  //   setMistakes(0);
-  //   setQuizNumber(1);
-  //   setCorrectCount(0);
-  //   setGameOver(false);
-  //   setShowGameOverModal(false);
-  //   setHasGuessedCorrectly(false); // Added to fix the correctCount issue
-  // };
-  const restartGame = () => {
-    // 게임 초기화 함수 사용
-    const initialGameState = GameLogic.initializeGame();
-    setWord(initialGameState.word);
-    setGuessedLetters(initialGameState.guessedLetters);
-    setMistakes(initialGameState.mistakes);
-    setQuizNumber(initialGameState.quizNumber);
-    setCorrectCount(initialGameState.correctCount);
-    setGameOver(initialGameState.gameOver);
-    setShowGameOverModal(initialGameState.showGameOverModal);
-    setHasGuessedCorrectly(initialGameState.hasGuessedCorrectly);
-  };
-
   const nextQuiz = () => {
     if (quizNumber < 3) {
-      // 게임 초기화 함수 사용
-      const initialGameState = GameLogic.initializeGame();
-      setWord(initialGameState.word);
-      setGuessedLetters(initialGameState.guessedLetters);
-      setMistakes(initialGameState.mistakes);
-      setQuizNumber(initialGameState.quizNumber);
-      setCorrectCount(initialGameState.correctCount);
-      setGameOver(initialGameState.gameOver);
+      setWord(GameLogic.getRandomWord());
+      setGuessedLetters([]);
+      setMistakes(0);
+      setQuizNumber(quizNumber + 1);
       setShowNextButton(false);
-      setShowGameOverModal(false);
-      setHasGuessedCorrectly(initialGameState.hasGuessedCorrectly);
+      setShowGameOverModal(false); // 추가: Next Quiz 버튼을 눌렀을 때 모달을 닫습니다.
+      setHasGuessedCorrectly(false); // Added to fix the correctCount issue
     } else {
       setGameOver(true);
       setShowNextButton(false);
     }
   };
 
-  
+  const restartGame = () => {
+    setWord(GameLogic.getRandomWord());
+    setGuessedLetters([]);
+    setMistakes(0);
+    setQuizNumber(1);
+    setCorrectCount(0);
+    setGameOver(false);
+    setShowGameOverModal(false);
+    setHasGuessedCorrectly(false); // Added to fix the correctCount issue
+  };
 
   const handleGameOver = () => {
     // 게임이 끝나지 않았을 때는 모달을 표시하지 않습니다.
@@ -194,6 +161,7 @@ const GameUI = () => {
           <div className="modal-content">
             <h1>{GameLogic.isWordComplete(word, guessedLetters) ? "You won!" : "You lost!"}</h1>
             <p>The correct word was: {word}</p>
+
             {/* 조건에 따라 다른 버튼을 표시 */}
             {quizNumber < 3 && GameLogic.isWordComplete(word, guessedLetters) ? (
               <button className="start-button" onClick={() => {nextQuiz(); handleButtonClickSound();}}>Next Quiz</button>
@@ -211,7 +179,22 @@ const GameUI = () => {
           <button className="start-button" onClick={() => {setShowModal(false); handleButtonClickSound();}}>Start Game</button>
         </div>
       </div>
-    )}
+    )}      
+    {/* {showModal && (
+        <div className={`modal ${gameOver ? 'game-over-modal' : 'start-modal'}`}>
+          <div className="modal-content">
+            <h1>{gameOver ? 'Game Over' : 'Welcome to the Hangman Game!'}</h1>
+            {gameOver ? (
+              <>
+                <button className="restart-button" onClick={restartGame}>New Game</button>
+                <button className="next-button" onClick={nextQuiz}>Next Game</button>
+              </>
+            ) : (
+              <button className="start-button" onClick={() => setShowModal(false)}>Start Game</button>
+            )}
+          </div>
+        </div>
+      )} */}
       {/* Audio Elements */}
       <audio ref={buttonAudioRef} src={process.env.PUBLIC_URL + '/sound/click.m4a'}></audio>
       <audio ref={incorrectAudioRef} src={process.env.PUBLIC_URL + '/sound/wronganswer.mp3'}></audio>
@@ -256,6 +239,12 @@ const GameUI = () => {
         <div className="error-count">
           Mistakes: {mistakes}
         </div>
+        {/* {showNextButton && !gameOver && (
+          <button className="game-button next-button" onClick={() => {nextQuiz(); handleButtonClickSound();}}>Next Quiz</button>
+        )}
+        {(gameOver || mistakes >= 8) && (
+          <button className="game-button restart-button" onClick={() => {restartGame(); handleButtonClickSound();}}>New Game</button>
+        )} */}
       </div>
     </div>
   );

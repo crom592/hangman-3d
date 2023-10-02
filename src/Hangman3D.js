@@ -26,10 +26,10 @@ const Hangman3D = ({ mistakes }) => {
       sceneRef.current.background = backgroundTexture;
 
       // Add lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+      const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
       // Add lighting with shadow
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-      directionalLight.position.set(0, 10, 10);
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+      directionalLight.position.set(20, 20, 0);
       directionalLight.castShadow = true;
       directionalLight.shadow.mapSize.width = 512;  // default is 512
       directionalLight.shadow.mapSize.height = 512; // default is 512
@@ -62,7 +62,7 @@ const Hangman3D = ({ mistakes }) => {
       controlsRef.current=controls
       
       // 1. Adjusted the Gallows' Position
-      const gallowsGeometry = new THREE.CylinderGeometry(0.5, 0.5, 5, 32);  // Changed to Cylinder
+      const gallowsGeometry = new THREE.CylinderGeometry(0.4, 0.5, 5.3, 32);  // Changed to Cylinder
       const normalTexture = new THREE.TextureLoader().load(
         process.env.PUBLIC_URL + '/34503018.jpeg'
       )
@@ -102,9 +102,7 @@ const Hangman3D = ({ mistakes }) => {
       // const scene = new THREE.Scene();
       if (!sceneRef.current) return; // sceneRef가 없다면 return
       const scene = sceneRef.current; // sceneRef에서 scene을 가져옴
-      // const width = hangmanDiv.current.clientWidth; // 컨테이너의 너비
-      // const height = hangmanDiv.current.clientHeight; // 컨테이너의 높이
-      
+
       
       hangmanDiv.current.innerHTML = '';  // Clear the div
       hangmanDiv.current.appendChild(rendererRef.current.domElement);
@@ -206,30 +204,19 @@ const Hangman3D = ({ mistakes }) => {
       hangmanFigure.children.forEach(child => {
         child.visible = false;
       });
-
+      
       scene.add(hangmanFigure);
-
-
-
       const parts = [rope, head, body, arms, hands, legs, feet];
-
-      const addParts = (numParts) => {
-        for (let i = 0; i < Math.min(numParts, parts.length); i++) {
-          if (parts[i]) {
-            parts[i].visible = true;
-          }
-        }
-      };
-
-
-      addParts(mistakes);
+      
 
       const animate = () => {
         requestAnimationFrame(animate);                
         // Update the camera controls
         controlsRef.current.update();
-        // setSwayAngle(Math.sin(Date.now() * 0.0015) * 0.015); // Adjust the amplitude and speed as needed        
-        // hangmanFigure.rotation.x += swayAngle
+        // setSwayAngle(Math.sin(Date.now() * 0.0015) * 0.015); // Adjust the amplitude and speed as needed
+        // if(mistakes === 7){
+        //   hangmanFigure.rotation.y +=0.05
+        // }
         rendererRef.current.render(sceneRef.current, cameraRef.current);
         // hangmanFigure.rotation.y += swayAngle;
       };
@@ -245,6 +232,15 @@ const Hangman3D = ({ mistakes }) => {
       };
 
     window.addEventListener('resize', handleResize);
+    const addParts = (numParts) => {
+      for (let i = 0; i < Math.min(numParts, parts.length); i++) {
+        if (parts[i]) {
+          parts[i].visible = true;
+        }
+      }
+    };      
+
+    addParts(mistakes);
 
     return () => {
         window.removeEventListener('resize', handleResize);
