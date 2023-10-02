@@ -11,12 +11,12 @@
 .hangman-container {
   flex: 1;
   max-width: 50%;
-  height: 100%; /* 높이를 100%로 설정 */
+  height: 100vh; /* 높이를 100%로 설정 */
   justify-content: center; /* 가운데 정렬 */
   align-items: center; /* 가운데 정렬 */
   overflow: visible;
   /* background-color: rgb(204, 24, 96); */
-  aspect-ratio: 16/9; /* 예시 비율 (원하는 비율로 변경 가능) */
+  aspect-ratio: 16/8; /* 예시 비율 (원하는 비율로 변경 가능) */
 }
 
 .info-container {
@@ -71,9 +71,12 @@
   right: 10px; 
   font-size: 10px;
 }
+
 .keyboard-button {
-  width: 40px;  /* 버튼 너비 설정 */
-  height: 40px;  /* 버튼 높이 설정 */
+  /*width: 40px;   버튼 너비 설정 */
+  /* height: 40px;   버튼 높이 설정 */
+  width: 2.5vw;  /* 예: viewport 너비의 5% */
+  height: 2.5vw; /* 예: viewport 너비의 5% */
   margin: 0 10px;  /* 양쪽 마진 설정 */
   padding: 10px 20px;  /* 패딩 설정 */
   font-size: 24px;  /* 글씨 크기 설정 */
@@ -192,7 +195,7 @@
 }
 
 /* 반응형 설정 */
-@media screen and (max-width: 1440px) {
+@media screen and (max-width: 800px) {
   .game-container {
     flex-direction: column;
     align-items: center;
