@@ -5,44 +5,54 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 const Hangman3D = ({ mistakes }) => {
   const hangmanDiv = useRef(null);
+  const sceneRef = useRef(null); // useRef를 사용하여 scene 저장
+  const rendererRef = useRef(null);
+  const cameraRef = useRef(null);
+  const controlsRef = useRef(null);
   // const [swayAngle, setSwayAngle] = useState(0);
 
   useEffect(() => {
     if (hangmanDiv.current) {
-
-      const scene = new THREE.Scene();
-      // const width = hangmanDiv.current.clientWidth; // 컨테이너의 너비
-      // const height = hangmanDiv.current.clientHeight; // 컨테이너의 높이
+      sceneRef.current = new THREE.Scene();
       
-      const renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize((window.innerWidth/2) , window.innerHeight);
-      renderer.shadowMap.enabled = true;
+      // const scene = new THREE.Scene();
+
+      const scene = sceneRef.current; // sceneRef에서 scene을 가져옴
+        // TextureLoader를 사용하여 배경 이미지 로드
+      const textureLoader = new THREE.TextureLoader();
+      const backgroundTexture = textureLoader.load(process.env.PUBLIC_URL + '/hangman_background.jpg'); // 여기에 이미지의 경로를 설정하세요.
       
-      const camera = new THREE.PerspectiveCamera(75, (window.innerWidth/2)  / window.innerHeight, 0.1, 1000);
-      camera.aspect = (window.innerWidth/2) / window.innerHeight;
-      camera.updateProjectionMatrix();
-
-      hangmanDiv.current.innerHTML = '';  // Clear the div
-      hangmanDiv.current.appendChild(renderer.domElement);
-
-      // Optionally, configure the controls
-      const controls = new OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true; // Smooth camera movement
-      controls.dampingFactor = 0.05; // Adjust the damping factor as needed
-      controls.rotateSpeed = 0.5;   // Adjust the rotation speed as needed
+      // scene의 배경으로 설정
+      sceneRef.current.background = backgroundTexture;
 
       // Add lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+      const ambientLight = new THREE.AmbientLight(0xffffff, 1);
       // Add lighting with shadow
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
       directionalLight.position.set(0, 10, 10);
       directionalLight.castShadow = true;
       directionalLight.shadow.mapSize.width = 512;  // default is 512
-      directionalLight.shadow.mapSize.height = 256; // default is 512
+      directionalLight.shadow.mapSize.height = 512; // default is 512
       scene.add(directionalLight);      
       scene.add(ambientLight);
       
-
+      const camera = new THREE.PerspectiveCamera(65, (window.innerWidth/2)  / window.innerHeight, 0.1, 100);
+      camera.aspect = (window.innerWidth/2) / (window.innerHeight);
+      camera.updateProjectionMatrix();
+      cameraRef.current = camera;
+      
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize((window.innerWidth/2) ,  (window.innerHeight));
+      renderer.shadowMap.enabled = true;
+      rendererRef.current = renderer;
+      
+      // Optionally, configure the controls
+      const controls = new OrbitControls(cameraRef.current, rendererRef.current.domElement);
+      controls.enableDamping = true; // Smooth camera movement
+      controls.dampingFactor = 0.05; // Adjust the damping factor as needed
+      controls.rotateSpeed = 0.5;   // Adjust the rotation speed as needed
+      controlsRef.current=controls
+      
       // 1. Adjusted the Gallows' Position
       const gallowsGeometry = new THREE.CylinderGeometry(0.5, 0.5, 5, 32);  // Changed to Cylinder
       const normalTexture = new THREE.TextureLoader().load(
@@ -52,53 +62,79 @@ const Hangman3D = ({ mistakes }) => {
       gallowsMaterial.normalMap = normalTexture
       gallowsMaterial.normalScale.set(1, 4)
       const gallows = new THREE.Mesh(gallowsGeometry, gallowsMaterial);
-      gallows.position.set(-2, 2.5, 0);
+      gallows.position.set(-2, 0, 0);
 
       const plankGeometry = new THREE.BoxGeometry(4, 0.2, 0.5);  // Reduced depth
       const plank = new THREE.Mesh(plankGeometry, gallowsMaterial);
-      plank.position.set(0, 4.9, 0);
+      plank.position.set(0, 2, 0);
 
       const boxGeometry = new THREE.BoxGeometry(5, 0.5, 2);  // Reduced depth
       const box = new THREE.Mesh(boxGeometry, gallowsMaterial);
-      box.position.set(-0.5, 0, 0);
-
+      box.position.set(-0.5, -2.7, 0);
+      
+      gallows.castShadow = true;
+      gallows.receiveShadow = true;
+      plank.receiveShadow = true;
+      
       const gallowsGroup = new THREE.Object3D();
       gallowsGroup.add(gallows, plank,box);
 
       scene.add(gallowsGroup);
 
+      // 3. Camera Position Adjusted
+      // camera.position.set(0, 2, 10);  // Adjusted position
+      cameraRef.current.position.set(6, 3, 8);
+      
+    }
+  }, []); // 빈 dependency array로 설정하여 한 번만 실행되게 함
+
+  useEffect(() => {
+    if (hangmanDiv.current) {
+
+      // const scene = new THREE.Scene();
+      if (!sceneRef.current) return; // sceneRef가 없다면 return
+      const scene = sceneRef.current; // sceneRef에서 scene을 가져옴
+      // const width = hangmanDiv.current.clientWidth; // 컨테이너의 너비
+      // const height = hangmanDiv.current.clientHeight; // 컨테이너의 높이
+      
+      
+      hangmanDiv.current.innerHTML = '';  // Clear the div
+      hangmanDiv.current.appendChild(rendererRef.current.domElement);
+
       // 2. Creating and Positioning Hangman's Parts
       const hangmanFigure = new THREE.Object3D();
 
       const ropeGeometry = new THREE.CylinderGeometry(0.05, 0.05, 1, 32);  // Reduced radius
-      const rope = new THREE.Mesh(ropeGeometry, gallowsMaterial);
-      rope.position.set(0, 4.5, 0);
+      const ropeMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
+      const rope = new THREE.Mesh(ropeGeometry, ropeMaterial);
+      rope.position.set(0, 1.5, 0);
       
       const headNormalTexture = new THREE.TextureLoader().load(
         process.env.PUBLIC_URL + '/smile.png'
       )
-      const headGeometry = new THREE.SphereGeometry(0.4, 32, 32,199.5);  // Reduced radius
+      const headGeometry = new THREE.SphereGeometry(0.4, 6, 8,199.8);  // Reduced radius
       const headMaterial = new THREE.MeshPhongMaterial({ color: 0xFFFF00 });
       headMaterial.normalMap = headNormalTexture
-      headMaterial.normalScale.set(10, 10)
+      headMaterial.normalScale.set(100, 100)
+      headMaterial.color.set(0xFFFF00)
       const head = new THREE.Mesh(headGeometry, headMaterial);
-      head.position.set(0, 3.7, 0);
+      head.position.set(0, 0.7, 0);
 
       // The body
       const bodyGeometry = new THREE.CapsuleGeometry(0.5, 0.8, 3, 32);  
       const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0xA08265 });
       const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-      body.position.set(0, 2.6, 0);
+      body.position.set(0, -0.5, 0);
 
       // arms
       const armsGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1.2);
       const armsMaterial = new THREE.MeshPhongMaterial({ color: 0xA08265 });
 
       const leftArm = new THREE.Mesh(armsGeometry, armsMaterial);
-      leftArm.position.set(-0.65,2.8, 0); 
+      leftArm.position.set(-0.65,-0.3, 0); 
       leftArm.rotation.z = 12
       const rightArm = new THREE.Mesh(armsGeometry, armsMaterial);
-      rightArm.position.set(0.65, 2.8, 0); 
+      rightArm.position.set(0.65, -0.3, 0); 
       rightArm.rotation.z = -12
       
       // Group Arms together
@@ -110,10 +146,10 @@ const Hangman3D = ({ mistakes }) => {
       const handMaterial = new THREE.MeshPhongMaterial({ color: 0xA08265 });
       
       const leftHand = new THREE.Mesh(handGeometry, handMaterial);
-      leftHand.position.set(-1, 2.3, 0);
+      leftHand.position.set(-1,-0.8, 0);
 
       const rightHand = new THREE.Mesh(handGeometry, handMaterial);
-      rightHand.position.set(1, 2.3, 0);
+      rightHand.position.set(1, -0.8, 0);
     
       // Group Hands together
       const hands = new THREE.Object3D();
@@ -124,10 +160,10 @@ const Hangman3D = ({ mistakes }) => {
       const legMaterial = new THREE.MeshPhongMaterial({ color: 0xA08265 });
 
       const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
-      leftLeg.position.set(-0.3, 1.5, 0);
+      leftLeg.position.set(-0.3, -1.6, 0);
 
       const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
-      rightLeg.position.set(0.3, 1.5, 0);
+      rightLeg.position.set(0.3, -1.6, 0);
 
       // Group Leg together
       const legs = new THREE.Object3D();
@@ -138,19 +174,16 @@ const Hangman3D = ({ mistakes }) => {
       const feetMaterial = new THREE.MeshPhongMaterial({ color: 0xA08265 });
 
       const leftFoot = new THREE.Mesh(feetGeometry, feetMaterial);
-      leftFoot.position.set(-0.3, 0.9, 0);
+      leftFoot.position.set(-0.3, -2.1, 0);
 
       const rightFoot = new THREE.Mesh(feetGeometry, feetMaterial);
-      rightFoot.position.set(0.3, 0.9, 0);
+      rightFoot.position.set(0.3, -2.1, 0);
 
       // Group Feet together
       const feet = new THREE.Object3D();
       feet.add(leftFoot, rightFoot);
       
-      // Enable shadow for objects
-      gallows.castShadow = true;
-      gallows.receiveShadow = true;
-      plank.receiveShadow = true;
+      // Enable shadow for objects     
       rope.castShadow = true;
       head.castShadow = true;
       body.castShadow = true;
@@ -168,9 +201,7 @@ const Hangman3D = ({ mistakes }) => {
 
       scene.add(hangmanFigure);
 
-      // 3. Camera Position Adjusted
-      // camera.position.set(0, 2, 10);  // Adjusted position
-      camera.position.set(6, 3, 8);
+
 
       const parts = [rope, head, body, arms, hands, legs, feet];
 
@@ -181,19 +212,17 @@ const Hangman3D = ({ mistakes }) => {
           }
         }
       };
-      
 
-      camera.position.z = 8;
 
       addParts(mistakes);
 
       const animate = () => {
         requestAnimationFrame(animate);                
         // Update the camera controls
-        controls.update();
+        controlsRef.current.update();
         // setSwayAngle(Math.sin(Date.now() * 0.0015) * 0.015); // Adjust the amplitude and speed as needed        
         // hangmanFigure.rotation.x += swayAngle
-        renderer.render(scene, camera);
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
         // hangmanFigure.rotation.y += swayAngle;
       };
       
@@ -202,10 +231,10 @@ const Hangman3D = ({ mistakes }) => {
         const width = hangmanDiv.current.clientWidth;
         const height = hangmanDiv.current.clientHeight;
 
-        renderer.setSize(width, height);
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-    };
+        rendererRef.current.setSize(width, height);
+        cameraRef.current.aspect = width / height;
+        cameraRef.current.updateProjectionMatrix();
+      };
 
     window.addEventListener('resize', handleResize);
 
