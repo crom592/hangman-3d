@@ -11,12 +11,12 @@
 .hangman-container {
   flex: 1;
   max-width: 50%;
-  height: 100vh; /* 높이를 100%로 설정 */
+  height: 100%; /* 높이를 100%로 설정 */
   justify-content: center; /* 가운데 정렬 */
   align-items: center; /* 가운데 정렬 */
   overflow: visible;
   /* background-color: rgb(204, 24, 96); */
-  aspect-ratio: 16/8; /* 예시 비율 (원하는 비율로 변경 가능) */
+  aspect-ratio: 16/9; /* 예시 비율 (원하는 비율로 변경 가능) */
 }
 
 .info-container {
@@ -202,11 +202,15 @@
     justify-content: center;
   }
 
-  .hangman-container, .info-container {
+  .info-container {
     align-items: center;
-    /* max-width: 100%; */
-    max-width: none; /* 최대 너비 제한을 해제 */
-    margin: 10px 0; /* 상하 여백 추가 */
+    max-width: 100%;
+    width: 100vw; /* viewport의 너비에 따라 크기를 조정 */
+    height: 50vh; /* viewport의 높이에 따라 크기를 조정 */
+  }
+  .hangman-container{
+    align-items: center;
+    max-width: 100%;
     width: 100vw; /* viewport의 너비에 따라 크기를 조정 */
     height: 50vh; /* viewport의 높이에 따라 크기를 조정 */
   }

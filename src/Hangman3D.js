@@ -36,13 +36,21 @@ const Hangman3D = ({ mistakes }) => {
       scene.add(directionalLight);      
       scene.add(ambientLight);
       
-      const camera = new THREE.PerspectiveCamera(65, (window.innerWidth/2)  / window.innerHeight, 0.1, 100);
-      camera.aspect = (window.innerWidth/2) / (window.innerHeight);
+      let height = window.innerHeight;
+      let width = window.innerWidth;
+      if (window.innerWidth <= 800) { // 화면의 너비가 800px 이하인 경우 모바일 환경으로 간주
+        height /= 2; // 높이를 반으로 조정        
+      }else{
+        width /=2; //넓이를 반으로 조정
+      }
+
+      const camera = new THREE.PerspectiveCamera(65, (window.innerWidth / 2) / height, 0.1, 100);
+      camera.aspect = width / height;
       camera.updateProjectionMatrix();
       cameraRef.current = camera;
-      
+
       const renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize((window.innerWidth/2) ,  (window.innerHeight));
+      renderer.setSize(width, height);
       renderer.shadowMap.enabled = true;
       rendererRef.current = renderer;
       
@@ -230,7 +238,7 @@ const Hangman3D = ({ mistakes }) => {
       const handleResize = () => {
         const width = hangmanDiv.current.clientWidth;
         const height = hangmanDiv.current.clientHeight;
-
+        
         rendererRef.current.setSize(width, height);
         cameraRef.current.aspect = width / height;
         cameraRef.current.updateProjectionMatrix();
