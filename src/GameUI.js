@@ -20,6 +20,20 @@ const GameUI = () => {
   const incorrectAudioRef = useRef(null);
   const winAudioRef = useRef(null);
   const loseAudioRef = useRef(null);
+  const keyboardRows = [
+    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+    ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
+  ];
+  
+  const handleKeyPress = (event) => {
+    const inputAlphabet = event.key.toUpperCase();
+
+    // 입력한 키가 알파벳인지 확인
+    if (/^[A-Z]$/.test(inputAlphabet) && mistakes < 8) {
+      guessLetter(inputAlphabet);
+    }
+  };
 
   const hiddenWord = GameLogic.getHiddenWord(word, guessedLetters);
 
@@ -127,14 +141,16 @@ const GameUI = () => {
       setShowGameOverModal(true);
     }
   }, [mistakes, guessedLetters]);
+  
+  useEffect(() => {
+    // 다른 코드와 마찬가지로 useEffect 내에서 다음 내용을 추가합니다.
+    window.addEventListener("keydown", handleKeyPress);
 
-  const keyboardRows = [
-    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
-    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-    ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
-  ];
-
-
+    // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [guessedLetters, mistakes]);
   
   return (
     <div className="game-container">
@@ -179,12 +195,6 @@ const GameUI = () => {
           </div>
         </div>
       )} */}
-      {/* BGM Toggle Button */}
-      <div className="game-button-container">
-      <button className="game-button bgm-button" onClick={() => {toggleBgm(); handleButtonClickSound();}}>
-        {isBgmPlaying ? "Pause BGM" : "Play BGM"}
-      </button>
-      </div>
       {/* Audio Elements */}
       <audio ref={buttonAudioRef} src={process.env.PUBLIC_URL + '/sound/click.m4a'}></audio>
       <audio ref={incorrectAudioRef} src={process.env.PUBLIC_URL + '/sound/wronganswer.mp3'}></audio>
@@ -195,6 +205,12 @@ const GameUI = () => {
         <Hangman3D mistakes={mistakes} />
       </div>
       <div className="info-container">        
+      {/* BGM Toggle Button */}
+      <div className="game-button-container">
+      <button className="game-button bgm-button" onClick={() => {toggleBgm(); handleButtonClickSound();}}>
+        {isBgmPlaying ? "Pause BGM" : "Play BGM"}
+      </button>
+      </div>
         <div className="quiz-number">
           Quiz: {quizNumber} / 3
         </div>

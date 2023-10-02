@@ -5,12 +5,14 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 const Hangman3D = ({ mistakes }) => {
   const hangmanDiv = useRef(null);
-  const [swayAngle, setSwayAngle] = useState(0);
+  // const [swayAngle, setSwayAngle] = useState(0);
 
   useEffect(() => {
     if (hangmanDiv.current) {
 
       const scene = new THREE.Scene();
+      // const width = hangmanDiv.current.clientWidth; // 컨테이너의 너비
+      // const height = hangmanDiv.current.clientHeight; // 컨테이너의 높이
       
       const renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize((window.innerWidth/2) , window.innerHeight);
@@ -189,17 +191,31 @@ const Hangman3D = ({ mistakes }) => {
         requestAnimationFrame(animate);                
         // Update the camera controls
         controls.update();
-        setSwayAngle(Math.sin(Date.now() * 0.0015) * 0.015); // Adjust the amplitude and speed as needed        
+        // setSwayAngle(Math.sin(Date.now() * 0.0015) * 0.015); // Adjust the amplitude and speed as needed        
         // hangmanFigure.rotation.x += swayAngle
         renderer.render(scene, camera);
         // hangmanFigure.rotation.y += swayAngle;
       };
       
       animate();
+      const handleResize = () => {
+        const width = hangmanDiv.current.clientWidth;
+        const height = hangmanDiv.current.clientHeight;
+
+        renderer.setSize(width, height);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+        window.removeEventListener('resize', handleResize);
+    };
     }
   }, [mistakes]);
 
-  return <div ref={hangmanDiv}></div>;
+  return <div ref={hangmanDiv} style={{ width: '100%', height: '100%' }}></div>;
 };
 
 export default Hangman3D;

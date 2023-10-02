@@ -16,6 +16,7 @@
   align-items: center; /* 가운데 정렬 */
   overflow: visible;
   /* background-color: rgb(204, 24, 96); */
+  aspect-ratio: 16/9; /* 예시 비율 (원하는 비율로 변경 가능) */
 }
 
 .info-container {
@@ -63,11 +64,11 @@
   height: auto;
 }
 .bgm-button {
-  display: inline;
-  align-items: right;
+  position: absolute;
+  top: 10px; 
+  right: 10px; 
   font-size: 10px;
 }
-
 .keyboard-button {
   width: 40px;  /* 버튼 너비 설정 */
   height: 40px;  /* 버튼 높이 설정 */
@@ -136,52 +137,6 @@
 .alphabet-buttons {
   margin-top: 30px;  /* 알파벳 배열과의 거리 증가 */
 }
-/* ... (기존 코드 생략) ... */
-
-/* 반응형 설정 */
-@media screen and (max-width: 800px) {
-  .game-container {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .hangman-container, .info-container {
-    max-width: 100%;
-    margin: 10px 0; /* 상하 여백 추가 */
-  }
-
-
-  .keyboard-button {
-    width: 36px;  /* 버튼 너비 조정 */
-    height: 36px;  /* 버튼 높이 조정 */
-    font-size: 18px;  /* 글씨 크기 조정 */
-    margin: 0 0px;  /* 양쪽 마진 조정 */
-    padding: 5px 10px;  /* 패딩 조정 */
-  }
-
-  .keyboard-row {
-    margin-bottom: 0.5rem;  /* 아래쪽 마진 조정 */
-    /* justify-content: space-evenly; 알파벳 버튼 간격을 동일하게 설정 */
-  }
-
-  .hidden-word {
-    font-size: 36px; /* 폰트 크기를 줄임 */
-  }
-
-  .error-count, .quiz-number, .correct-count {
-    font-size: 24px; /* 폰트 크기를 줄임 */
-  }
-
-  .restart-button, .next-button {
-    padding: 10px 20px; /* 패딩을 줄임 */
-  }
-
-  .alphabet-buttons {
-    margin-top: 20px; /* 여백을 줄임 */
-  }
-}
-
 
 .modal {
   position: fixed;
@@ -234,44 +189,49 @@
   transform: translateY(2px);
 }
 
-
-
-/* 
-.celebration {
-  position: relative;
-  overflow: hidden;
-}
-
-.celebration::before,
-.celebration::after,
-.balloon {
-  content: "";
-  position: absolute;
-  bottom: -100px;
-  width: 20px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: red;
-  animation: floatBalloon 5s infinite ease-in-out;
-}
-
-.celebration::after {
-  left: 50px;
-  background-color: blue;
-  animation-delay: 1s;
-}
-
-.balloon {
-  left: 100px;
-  background-color: green;
-  animation-delay: 2s;
-}
-
-@keyframes floatBalloon {
-  0% {
-    transform: translateY(0);
+/* 반응형 설정 */
+@media screen and (max-width: 1440px) {
+  .game-container {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
-  100% {
-    transform: translateY(-100vh);
+
+  .hangman-container, .info-container {
+    align-items: center;
+    /* max-width: 100%; */
+    max-width: none; /* 최대 너비 제한을 해제 */
+    margin: 10px 0; /* 상하 여백 추가 */
+    width: 100vw; /* viewport의 너비에 따라 크기를 조정 */
+    height: 50vh; /* viewport의 높이에 따라 크기를 조정 */
   }
-} */
+
+  .keyboard-button {
+    width: 36px;  /* 버튼 너비 조정 */
+    height: 36px;  /* 버튼 높이 조정 */
+    font-size: 18px;  /* 글씨 크기 조정 */
+    margin: 0 0px;  /* 양쪽 마진 조정 */
+    padding: 5px 10px;  /* 패딩 조정 */
+  }
+
+  .keyboard-row {
+    margin-bottom: 0.5rem;  /* 아래쪽 마진 조정 */
+    /* justify-content: space-evenly; 알파벳 버튼 간격을 동일하게 설정 */
+  }
+
+  .hidden-word {
+    font-size: 36px; /* 폰트 크기를 줄임 */
+  }
+
+  .error-count, .quiz-number, .correct-count {
+    font-size: 24px; /* 폰트 크기를 줄임 */
+  }
+
+  .restart-button, .next-button {
+    padding: 10px 20px; /* 패딩을 줄임 */
+  }
+
+  .alphabet-buttons {
+    margin-top: 20px; /* 여백을 줄임 */
+  }
+}
