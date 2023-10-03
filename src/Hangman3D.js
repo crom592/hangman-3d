@@ -18,6 +18,16 @@ const Hangman3D = ({ mistakes }) => {
       // const scene = new THREE.Scene();
 
       const scene = sceneRef.current; // sceneRef에서 scene을 가져옴
+
+      // 이전 행맨 피규어 제거
+      const previousHangman = scene.getObjectByName("hangmanFigure");
+      if (previousHangman) {
+        scene.remove(previousHangman);
+      }
+
+      
+
+
         // TextureLoader를 사용하여 배경 이미지 로드
       const textureLoader = new THREE.TextureLoader();
       const backgroundTexture = textureLoader.load(process.env.PUBLIC_URL + '/hangman_background.jpg'); // 여기에 이미지의 경로를 설정하세요.
@@ -107,8 +117,16 @@ const Hangman3D = ({ mistakes }) => {
       hangmanDiv.current.innerHTML = '';  // Clear the div
       hangmanDiv.current.appendChild(rendererRef.current.domElement);
 
-      // 2. Creating and Positioning Hangman's Parts
+      // 2. Creating and Positioning Hangman's Parts      
+      // 이전 행맨 피규어 제거
+      const previousHangman = scene.getObjectByName("hangmanFigure");
+      if (previousHangman) {
+        scene.remove(previousHangman);
+      }
+
+      // 새로운 행맨 피규어 생성
       const hangmanFigure = new THREE.Object3D();
+      hangmanFigure.name = "hangmanFigure";  // 이름을 설정하여 나중에 찾을 수 있게 함
 
       const ropeGeometry = new THREE.CylinderGeometry(0.05, 0.05, 1, 32);  // Reduced radius
       const ropeMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
@@ -231,21 +249,22 @@ const Hangman3D = ({ mistakes }) => {
         cameraRef.current.updateProjectionMatrix();
       };
 
-    window.addEventListener('resize', handleResize);
-    const addParts = (numParts) => {
-      for (let i = 0; i < Math.min(numParts, parts.length); i++) {
-        if (parts[i]) {
-          parts[i].visible = true;
+      window.addEventListener('resize', handleResize);
+      const addParts = (numParts) => {
+        for (let i = 0; i < Math.min(numParts, parts.length); i++) {
+          if (parts[i]) {
+            parts[i].visible = true;
+          }
         }
+      };      
+
+      addParts(mistakes);
+      
+
+      return () => {
+          window.removeEventListener('resize', handleResize);
+      };
       }
-    };      
-
-    addParts(mistakes);
-
-    return () => {
-        window.removeEventListener('resize', handleResize);
-    };
-    }
   }, [mistakes]);
 
   return <div ref={hangmanDiv} style={{ width: '100%', height: '100%' }}></div>;
