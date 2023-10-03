@@ -14,6 +14,7 @@ const GameUI = () => {
   const [showGameOverModal, setShowGameOverModal] = useState(false);
   const [hasGuessedCorrectly, setHasGuessedCorrectly] = useState(false); // Added to fix the correctCount issue
   const [isBgmPlaying, setIsBgmPlaying] = useState(false);
+  const [showHowToPlayModal, setShowHowToPlayModal] = useState(false);
 
   const bgmAudioRef = useRef(null);
   const buttonAudioRef = useRef(null);
@@ -179,22 +180,26 @@ const GameUI = () => {
           <button className="start-button" onClick={() => {setShowModal(false); handleButtonClickSound();}}>Start Game</button>
         </div>
       </div>
-    )}      
-    {/* {showModal && (
-        <div className={`modal ${gameOver ? 'game-over-modal' : 'start-modal'}`}>
-          <div className="modal-content">
-            <h1>{gameOver ? 'Game Over' : 'Welcome to the Hangman Game!'}</h1>
-            {gameOver ? (
-              <>
-                <button className="restart-button" onClick={restartGame}>New Game</button>
-                <button className="next-button" onClick={nextQuiz}>Next Game</button>
-              </>
-            ) : (
-              <button className="start-button" onClick={() => setShowModal(false)}>Start Game</button>
-            )}
-          </div>
+    )}
+    {/* How to Play Modal */}
+    {showHowToPlayModal && (
+      <div className="modal">
+        <div className="modal-content">
+          <h1>How to Play</h1>
+          <p>
+            Welcome to the Hangman Game! 
+            Your goal is to guess the word letter by letter. 
+        
+            For each incorrect guess, a part of the hangman figure is drawn. 
+            If the full figure is drawn before you guess the word, you lose. 
+            
+            Use the on-screen keyboard or your physical keyboard to make guesses. 
+            Good luck!
+          </p>
+          <button className="start-button" onClick={() => setShowHowToPlayModal(false)}>Close</button>
         </div>
-      )} */}
+      </div>
+    )}      
       {/* Audio Elements */}
       <audio ref={buttonAudioRef} src={process.env.PUBLIC_URL + '/sound/click.m4a'}></audio>
       <audio ref={incorrectAudioRef} src={process.env.PUBLIC_URL + '/sound/wronganswer.mp3'}></audio>
@@ -207,6 +212,7 @@ const GameUI = () => {
       <div className="info-container">        
       {/* BGM Toggle Button */}
       <div className="game-button-container">
+      <button className="game-button how-button" onClick={() => setShowHowToPlayModal(true)}>How to Play</button>
       <button className="game-button bgm-button" onClick={() => {toggleBgm(); handleButtonClickSound();}}>
         {isBgmPlaying ? "Pause BGM" : "Play BGM"}
       </button>
@@ -239,13 +245,11 @@ const GameUI = () => {
         <div className="error-count">
           Mistakes: {mistakes}
         </div>
-        {/* {showNextButton && !gameOver && (
-          <button className="game-button next-button" onClick={() => {nextQuiz(); handleButtonClickSound();}}>Next Quiz</button>
-        )}
-        {(gameOver || mistakes >= 8) && (
-          <button className="game-button restart-button" onClick={() => {restartGame(); handleButtonClickSound();}}>New Game</button>
-        )} */}
+        {/* 카피라이트 */}
+      <div className="copyright">
+        &copy; 2023 Hangman3D Name. All Rights Reserved.
       </div>
+      </div>      
     </div>
   );
 };

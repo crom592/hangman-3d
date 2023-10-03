@@ -65,6 +65,14 @@
   justify-content: flex-end;
   height: auto;
 }
+
+.how-button {
+  position: absolute;
+  top: 10px; 
+  right: 120px; 
+  font-size: 10px;
+}
+
 .bgm-button {
   position: absolute;
   top: 10px; 
@@ -161,10 +169,28 @@
   padding: 20px;
   border-radius: 8px;
   text-align: center;
+  width: 60%; /* 모달의 넓이를 조절 */
+  max-width: 500px; /* 모달의 최대 넓이 설정 */
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  font-family: 'Arial', sans-serif; /* 그로테스크 스타일의 폰트 적용 */
 }
 
-/* Add a transition for smoothness */
-.modal-content h1,
+.modal-content h1 {
+  margin-top: 0;
+  font-size: 24px;
+  border-bottom: 2px solid #333; /* 마크다운 스타일 헤더의 하단 경계 추가 */
+  padding-bottom: 10px;
+}
+
+.modal-content p {
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 20px 0;
+}
+
 .modal-content button {
   margin-bottom: 20px;
 }
@@ -192,6 +218,14 @@
 .start-button:active {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transform: translateY(2px);
+}
+/* 카피라이트 스타일 */
+.copyright {
+  display: inline;
+  text-align: center;
+  font-size: 14px;
+  color: #000000;
+  margin-top: 20px;
 }
 
 /* 반응형 설정 */
