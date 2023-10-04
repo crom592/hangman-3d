@@ -227,6 +227,32 @@
   color: #000000;
   margin-top: 20px;
 }
+.hint-button {
+  padding: 10px 20px;
+  margin-top: 20px;
+  background-color: #f7a623;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.hint-button:hover {
+  background-color: #f88d48;
+}
+
+.hint-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  background-color: #f7a623;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  z-index: 10;
+}
 
 /* 반응형 설정 */
 @media screen and (max-width: 800px) {

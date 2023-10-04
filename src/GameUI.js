@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef,useCallback } from 'react';
 import Hangman3D from './Hangman3D';
 import GameLogic from './GameLogic';
+import WORDS_DATA from './words';
 
 const GameUI = () => {
   const [showNextButton, setShowNextButton] = useState(false);
-  const [word, setWord] = useState(GameLogic.getRandomWord());
+  // const [word, setWord] = useState(GameLogic.getRandomWord());
   const [guessedLetters, setGuessedLetters] = useState([]);
   const [mistakes, setMistakes] = useState(0);
   const [quizNumber, setQuizNumber] = useState(1);
@@ -15,6 +16,15 @@ const GameUI = () => {
   const [hasGuessedCorrectly, setHasGuessedCorrectly] = useState(false); // Added to fix the correctCount issue
   const [isBgmPlaying, setIsBgmPlaying] = useState(false);
   const [showHowToPlayModal, setShowHowToPlayModal] = useState(false);
+  // 추가: 카테고리 상태 변수
+  const [category, setCategory] = useState(null);
+  const [showHintToast, setShowHintToast] = useState(false);
+  // 기본 카테고리를 FRUITS로 설정
+  const DEFAULT_CATEGORY = 'FRUITS';
+  // useState 초기화 부분 수정
+const [word, setWord] = useState(GameLogic.getRandomWordFromCategory(DEFAULT_CATEGORY));
+
+  
 
   const bgmAudioRef = useRef(null);
   const buttonAudioRef = useRef(null);
@@ -44,7 +54,7 @@ const GameUI = () => {
     const newGuessedLetters = [...guessedLetters, letter];
     let newMistakes = mistakes;
 
-    if (!word.includes(letter)) {
+    if (!word.word.includes(letter)) {
       incorrectAudioRef.current.play();
       newMistakes++;
     } else {
@@ -72,7 +82,7 @@ const GameUI = () => {
 
   const nextQuiz = () => {
     if (quizNumber < 3) {
-      setWord(GameLogic.getRandomWord());
+      setWord(GameLogic.getRandomWordFromCategory( category ));
       setGuessedLetters([]);
       setMistakes(0);
       setQuizNumber(quizNumber + 1);
@@ -86,7 +96,7 @@ const GameUI = () => {
   };
 
   const restartGame = () => {
-    setWord(GameLogic.getRandomWord());
+    setWord(GameLogic.getRandomWordFromCategory(category));
     setGuessedLetters([]);
     setMistakes(0);
     setQuizNumber(1);
@@ -111,6 +121,19 @@ const GameUI = () => {
     setShowGameOverModal(true);
   };
 
+   // 카테고리 선택을 위한 함수
+   const startGameWithCategory = (selectedCategory) => {
+    const wordObj = GameLogic.getRandomWordFromCategory(selectedCategory);
+    setWord(wordObj);
+    setCategory(selectedCategory);
+    setShowModal(false);
+    handleButtonClickSound();
+  };
+
+  const toggleHintToast = () => {
+    setShowHintToast(true);
+    setTimeout(() => setShowHintToast(false), 3000); // 3초 후 힌트 메세지 숨김
+  };
   useEffect(() => {
     if (!showModal) {
       toggleBgm();
@@ -161,7 +184,7 @@ const GameUI = () => {
         <div className="modal">
           <div className="modal-content">
             <h1>{GameLogic.isWordComplete(word, guessedLetters) ? "You won!" : "You lost!"}</h1>
-            <p>The correct word was: {word}</p>
+            <p>The correct word was: {word.word}</p>
 
             {/* 조건에 따라 다른 버튼을 표시 */}
             {quizNumber < 3 && GameLogic.isWordComplete(word, guessedLetters) ? (
@@ -177,7 +200,13 @@ const GameUI = () => {
       <div className="modal">
         <div className="modal-content">
           <h1>Welcome to the Hangman Game!</h1>
-          <button className="start-button" onClick={() => {setShowModal(false); handleButtonClickSound();}}>Start Game</button>
+          <p>Select a category to start:</p>
+          <select onChange={(e) => startGameWithCategory(e.target.value)}>
+            {Object.keys(WORDS_DATA).map(cat => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+          {/* <button className="start-button" onClick={() => {setShowModal(false); handleButtonClickSound();}}>Start Game</button> */}
         </div>
       </div>
     )}
@@ -232,7 +261,7 @@ const GameUI = () => {
               {row.map((letter) => (
                 <button 
                   key={letter} 
-                  className={`keyboard-button ${guessedLetters.includes(letter.toUpperCase()) ? (word.includes(letter.toUpperCase()) ? 'correct' : 'incorrect') : ''}`}
+                  className={`keyboard-button ${guessedLetters.includes(letter.toUpperCase()) ? (word.word.includes(letter.toUpperCase()) ? 'correct' : 'incorrect') : ''}`}
                   onClick={() => guessLetter(letter)}
                   disabled={mistakes >= 8}  // Add disabled condition here
                 >
@@ -245,9 +274,11 @@ const GameUI = () => {
         <div className="error-count">
           Mistakes: {mistakes}
         </div>
+        <button className="hint-button" onClick={toggleHintToast}>Show Hint</button>
+      {showHintToast && word && <div className="hint-toast">Your hint is: {GameLogic.getHint(word)}</div>}
         {/* 카피라이트 */}
       <div className="copyright">
-        &copy; 2023 Hangman3D Name. All Rights Reserved.
+        &copy; 2023 Hangman3D by Crom. All Rights Reserved.
       </div>
       </div>      
     </div>
